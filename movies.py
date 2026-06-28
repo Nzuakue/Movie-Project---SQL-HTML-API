@@ -1,11 +1,10 @@
-import os
 import statistics as st
 import random as rand
 from operator import itemgetter
 import matplotlib.pyplot as plt
 from dotenv import load_dotenv
 from rapidfuzz import fuzz
-import movie_storage_sql as storage
+import movie_storage.movie_storage_sql as storage
 import sys
 import movies_content_generator as mcg
 
@@ -248,33 +247,3 @@ def command_generate_website():
 
 def command_exit():
     sys.exit("Bye!")
-
-
-def main():
-    user_choice = int()
-    funct_dict = {0: command_exit, 1: command_list_movies, 2: command_add_movie, 3: command_delete_movie,
-                  4: command_update_movie, 5: command_generate_stats,
-                  6: command_random_movie,
-                  7: command_search_movie, 8: command_sort_by_rating, 9: command_sort_by_year,
-                  10: command_create_histogram,
-                  11: command_filter_movies, 12: command_generate_website
-                  }
-    print('********** My Movies Database **********', end='\n\n')
-    while True:
-        menu()
-        try:
-            user_choice = input(f'{YELLOW}Enter choice (0-12): {RESET}')
-            if not (user_choice.isdecimal() and int(user_choice) in range(0, 13)):
-                raise ValueError(f"{RED}Enter a number between 0 and 12{RESET}")
-            user_choice = int(user_choice)
-        except ValueError as e:
-            print(f"{RED}{e}{RESET}")
-        else:
-            funct_dict[user_choice]()
-            print('')
-            input(f'{YELLOW}Press enter to continue.{RESET}')
-            print('')
-
-
-if __name__ == "__main__":
-    main()
