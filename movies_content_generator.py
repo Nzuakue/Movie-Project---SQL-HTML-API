@@ -31,7 +31,7 @@ def create_content():
         output += f"<img class=\"movie-poster\" src=\"{movie.poster_image_url}\"/>\n"
         output += "</div>\n"
         output += "<div class=\"movie-title\">"
-        output += f"{movie.title}"
+        output += f"{movie.title} ({movie.rating})"
         output += "</div>\n"
         output += "<div class=\"movie-year\">"
         output += f"{movie.year}"
