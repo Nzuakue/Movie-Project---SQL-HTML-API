@@ -3,7 +3,12 @@ from sqlalchemy import create_engine, text
 import requests
 from dotenv import load_dotenv
 from sqlalchemy.exc import IntegrityError
-from main import get_active_user
+from config import shared_data as sd
+
+RED = '\033[31m'
+GREEN = '\033[32m'
+YELLOW = '\033[33m'
+RESET = '\033[0m'
 
 # Load the .env file from current directory
 load_dotenv()
@@ -14,21 +19,6 @@ MOVIES_API_URL = "http://www.omdbapi.com/"
 
 # Create the engine
 engine = create_engine(DB_URL, echo=False)
-
-create_tables_stmt = """
-    CREATE TABLE IF NOT EXISTS movies (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT COLLATE NOCASE UNIQUE NOT NULL,
-    year INTEGER NOT NULL,
-    rating REAL NOT NULL,
-    poster_image_url TEXT,
-    user_name TEXT NOT NULL
-);
-    CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT COLLATE NOCASE UNIQUE NOT NULL
-);
-"""
 
 # Create movies tables if thy do not exist.
 with engine.connect() as connection:
@@ -95,11 +85,11 @@ def add_movie(title):
             rating = movie.get(movie_title).get("rating")
             poster_image_url = movie.get(movie_title).get("poster_image_url")
             connection.execute(text(
-                "INSERT INTO movies (title, year, rating, poster_image_url, user_id) VALUES (:movie_title, :year, :rating, :poster_image_url, :user_name)"),
+                "INSERT INTO movies (title, year, rating, poster_image_url, user_id) VALUES (:movie_title, :year, :rating, :poster_image_url, :user_id)"),
                 {"movie_title": movie_title, "year": year, "rating": rating, "poster_image_url": poster_image_url,
-                 "user_name": get_active_user()})
+                 "user_id": sd.get("active_user_id")})
             connection.commit()
-            print(f"Movie '{title}' added successfully.")
+            print(f"Movie {RED}\"{title}\"{RESET} added to {sd.get('name')}´s {RED}collection!{RESET}")
         except IntegrityError as e:
             error_msg = str(e).lower()
             if "unique" in error_msg:
@@ -114,8 +104,8 @@ def list_movies():
     """
     with engine.connect() as connection:
         return connection.execute(
-            text("SELECT title, year, rating, poster_image_url FROM movies WHERE user_name = :user_name"),
-            {"user_name": get_active_user()})
+            text("SELECT title, year, rating, poster_image_url, user_id FROM movies WHERE user_id = :user_id"),
+            {"user_id": sd.get("active_user_id")})
 
 
 def update_movie(title, rate):
@@ -128,8 +118,8 @@ def update_movie(title, rate):
     with engine.connect() as connection:
         try:
             result = connection.execute(
-                text("UPDATE movies SET rating = :new_rate WHERE title = :title and user_id = :user_name"),
-                {"new_rate": rate, "title": title, "user_name": get_active_user()})
+                text("UPDATE movies SET rating = :new_rate WHERE title = :title and user_id = :user_id"),
+                {"new_rate": rate, "title": title, "user_id": sd.get("active_user_id")})
             connection.commit()
             if result.rowcount == 0:
                 print(f"Movie \"{title}\" does not exist.")
@@ -147,8 +137,8 @@ def delete_movie(title):
     """
     with engine.connect() as connection:
         try:
-            result = connection.execute(text("DELETE FROM movies WHERE title = :title and user_name = :user_name"),
-                                        {"title": title, "user_name": get_active_user()})
+            result = connection.execute(text("DELETE FROM movies WHERE title = :title and user_id = :user_id"),
+                                        {"title": title, "user_id": sd.get("active_user_id")})
             connection.commit()
             if result.rowcount == 0:
                 print(f"Movie '{title}' does not exist.")
@@ -184,10 +174,10 @@ def list_users():
     Retrieve all users from the database.
     """
     with engine.connect() as connection:
-        return connection.execute(text("SELECT name FROM users"))
+        return connection.execute(text("SELECT id, name FROM users"))
 
 
-def update_user(old_name, new_name):
+def update_user(new_name):
     """
     Update an username in the database.
 
@@ -198,12 +188,12 @@ def update_user(old_name, new_name):
         try:
             result = connection.execute(
                 text("UPDATE movies SET name = :new_name WHERE name = :old_name"),
-                {"new_name": new_name, "old_name": old_name})
+                {"new_name": new_name, "old_name": sd.get("name")})
             connection.commit()
             if result.rowcount == 0:
-                print(f"User \"{old_name}\" does not exist.")
+                print(f"User \"{new_name}\" does not exist.")
             elif result.rowcount > 0:
-                print(f"User \"{old_name}\" updated successfully.")
+                print(f"User \"{new_name}\" updated successfully.")
         except Exception as e:
             print(f"Error: {e}")
 

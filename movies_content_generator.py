@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-import movie_storage.movie_storage_sql as storage
+import movies_storage.movies_storage_sql as storage
 
 # Load .env file
 load_dotenv()
