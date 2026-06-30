@@ -1,6 +1,7 @@
 # My Awesome Project
 
-This project implements commands among others for listing, adding, deleting, updating and generating website 
+This project implements commands among others for listing, adding, deleting, updating and generating website to display
+my movies.
 
 ## Installation
 
