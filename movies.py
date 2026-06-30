@@ -47,7 +47,7 @@ def input_movie_properties(input_text, return_type):
         try:
             user_input = input(input_text)
             if return_type == "str" and len(user_input) == 0:
-                raise ValueError('Movie name is empty or contains only space!')
+                raise ValueError('Movie name or note is empty or contains only space!')
             elif return_type == "float":
                 return float(user_input)
             elif return_type == "int":
@@ -90,9 +90,10 @@ def command_delete_movie():
 
 def command_update_movie():
     """Update a movie in the database if it exists"""
-    title = input_movie_properties("Enter a movie name: ", 'str')
-    rate = input_movie_properties("Enter a movie rate: ", 'float')
-    storage.update_movie(title, rate)
+    title = str(input_movie_properties("Enter a movie name: ", 'str'))
+    rate = float(input_movie_properties("Enter a movie rate: ", 'float'))
+    movie_note = str(input_movie_properties("Enter a movie note: ", 'str'))
+    storage.update_movie(title, rate, movie_note)
 
 
 def command_generate_stats():

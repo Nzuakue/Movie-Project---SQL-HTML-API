@@ -29,7 +29,8 @@ with engine.connect() as connection:
         year INTEGER NOT NULL,
         rating REAL NOT NULL,
         poster_image_url TEXT,
-        user_id INTEGER NOT NULL
+        user_id INTEGER NOT NULL,
+        movie_note TEXT
         )
     """))
     connection.commit()
@@ -104,22 +105,23 @@ def list_movies():
     """
     with engine.connect() as connection:
         return connection.execute(
-            text("SELECT title, year, rating, poster_image_url, user_id FROM movies WHERE user_id = :user_id"),
+            text("SELECT title, year, rating, poster_image_url, user_id, movie_note FROM movies WHERE user_id = :user_id"),
             {"user_id": sd.get("active_user_id")})
 
 
-def update_movie(title, rate):
+def update_movie(title, rate, movie_note):
     """
     Update a movies rating in the database.
 
     :param str title: movie to be updated
     :param float rate: movie rate
+    :param str movie_note: movie note
     """
     with engine.connect() as connection:
         try:
             result = connection.execute(
-                text("UPDATE movies SET rating = :new_rate WHERE title = :title and user_id = :user_id"),
-                {"new_rate": rate, "title": title, "user_id": sd.get("active_user_id")})
+                text("UPDATE movies SET rating = :rate, movie_note = :movie_note WHERE title = :title and user_id = :user_id"),
+                {"rate": rate,"movie_note": movie_note, "title": title, "user_id": sd.get("active_user_id")})
             connection.commit()
             if result.rowcount == 0:
                 print(f"Movie \"{title}\" does not exist.")

@@ -50,3 +50,26 @@ body {
     width: 128px;
     height: 193px;
 }
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltiptext {
+  visibility: hidden;
+  width: 130px;
+  background-color: lightgrey;
+  color: black;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}

@@ -24,7 +24,12 @@ def create_content():
         print(movie)
         output += "<li>\n"
         output += "<div class=\"movie\">\n"
+        output += "<div class=\"tooltip\">\n"
+        output += "<span class=\"tooltiptext\">"
+        output += f"{movie.movie_note}"
+        output += "</span>\n"
         output += f"<img class=\"movie-poster\" src=\"{movie.poster_image_url}\"/>\n"
+        output += "</div>\n"
         output += "<div class=\"movie-title\">"
         output += f"{movie.title}"
         output += "</div>\n"
